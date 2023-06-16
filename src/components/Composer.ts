@@ -50,6 +50,9 @@ export default defineComponent({
 	},
 	events: [ 'update:modelValue' ],
 	setup(props, { emit }) {
+		const fullSchema = computed(() => ({ ...defaultSchema, ...props.schema }));
+		let doc = computed(() => (new Parser(props.modelValue, fullSchema.value)).parse());
+
 		const selectedPosition : Ref<number[]|null> = ref(null);
 		function selectComponent(position : any, event : Event) {
 			selectedPosition.value = position;
@@ -141,9 +144,6 @@ export default defineComponent({
 
 			emit('update:modelValue', (new Formatter(newDoc)).format());
 		}
-
-		const fullSchema = computed(() => ({ ...defaultSchema, ...props.schema }));
-		let doc = computed(() => (new Parser(props.modelValue, fullSchema.value)).parse());
 
 		return () => (new Renderer(doc, fullSchema.value, selectedPosition, selectComponent, updateContent, addContent)).render();
 	},
