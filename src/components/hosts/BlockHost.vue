@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { nextTick, ref, watch, type Ref } from "vue";
 
-const emit = defineEmits(['select','input']);
+const emit = defineEmits(['select','input','remove']);
 
 const props = defineProps({
     selected: {
@@ -35,6 +35,9 @@ watch(() => props.selected, function(value) {
         <div :contenteditable="selected" @click.capture="editContent" @blur="saveContent" ref="blockEditElement">
             <slot></slot>
         </div>
-        <div v-if="selected" ref="titlebar" :style="{ position: 'absolute', top: '-1.25rem', left: 0, right: 0, borderTopLeftRadius: '9999px', borderTopRightRadius: '9999px', backgroundColor: '#3b82f6', color: '#fff', fontSize: '.75rem', paddingLeft: '1rem', paddingRight: '1rem', paddingBottom: '.25rem', lineHeight: '1rem' }">&lt;{{ tag }} /&gt;</div>
+        <div v-if="selected" ref="titlebar" :style="{ display: 'flex', position: 'absolute', top: '-1.25rem', left: '-2px', right: '-2px', borderTopLeftRadius: '.5rem', borderTopRightRadius: '.5rem', backgroundColor: '#3b82f6', color: '#fff', fontSize: '.75rem', paddingLeft: '1rem', paddingRight: '1rem', paddingBottom: '.25rem', lineHeight: '1rem' }">
+            <div :style="{ flexGrow: '1' }">&lt;{{ tag }} /&gt;</div>
+            <div :style="{ flexGrow: '0', flexShrink: '0' }" @click="$emit('remove')" class="cursor-pointer ml-auto">x</div>
+        </div>
     </div>
 </template>

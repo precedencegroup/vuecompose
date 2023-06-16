@@ -91,6 +91,42 @@ export default defineComponent({
 			emit('update:modelValue', (new Formatter(newDoc)).format());
 		};
 
+		function removeContent(position : number[]) {
+			const newDoc = (new Parser(props.modelValue, fullSchema.value)).parse();
+
+			if(newDoc === null) {
+				return;
+			}
+
+			// Find the updateableItem that represents the parent of the position to be removed
+			let updateableItem : any[]|null = newDoc;
+			let parentPosition : number[] = [];
+			let childPosition : number = 0;
+			for (let i = 0; i < position.length; i++) {
+				if(updateableItem === null) {
+					return;
+				}
+
+				if (i === position.length - 1) {
+					childPosition = position[i];
+					continue;
+				}
+
+				parentPosition.push(position[i]);
+				updateableItem = updateableItem[position[i]][2] ?? null;
+			}
+
+			if(updateableItem === null) {
+				return;
+			}
+
+			// Splice out the item at the child position inside the parent updateableItem
+			updateableItem.splice(childPosition, 1);
+
+			// Emit the updated modelValue
+			emit('update:modelValue', (new Formatter(newDoc)).format());
+		}
+
 		function addContent(position : number[], slotName : string) {
 			const newDoc = (new Parser(props.modelValue, fullSchema.value)).parse();
 
@@ -145,6 +181,6 @@ export default defineComponent({
 			emit('update:modelValue', (new Formatter(newDoc)).format());
 		}
 
-		return () => (new Renderer(doc, fullSchema.value, selectedPosition, selectComponent, updateContent, addContent)).render();
+		return () => (new Renderer(doc, fullSchema.value, selectedPosition, selectComponent, updateContent, addContent, removeContent)).render();
 	},
 });

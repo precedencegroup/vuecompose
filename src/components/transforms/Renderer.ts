@@ -21,14 +21,16 @@ export default class {
 	selectHandler : Function = () => [];
 	updateHandler : Function = () => [];
 	addHandler : Function = () => [];
+	removeHandler : Function = () => [];
 
-	constructor(document : Ref<any[]|null>, schema :  Schema, selectedPosition : Ref<number[]|null>, selectHandler : Function, updateHandler : Function, addHandler : Function) {
+	constructor(document : Ref<any[]|null>, schema :  Schema, selectedPosition : Ref<number[]|null>, selectHandler : Function, updateHandler : Function, addHandler : Function, removeHandler : Function) {
 		this.document.value = document.value;
 		this.schema = schema;
 		this.selectedPosition.value = selectedPosition.value;
 		this.selectHandler = selectHandler;
 		this.updateHandler = updateHandler;
 		this.addHandler = addHandler;
+		this.removeHandler = removeHandler;
 	}
 
 	render() : (VNode|string)[] {
@@ -66,6 +68,7 @@ export default class {
 		componentAttributes.onClick = withModifiers(this.selectHandler.bind(null, node[0].position), ['capture']);
 
 		let hostAttributes = {
+			onRemove: this.removeHandler.bind(null, node[0].position),
 			class: componentAttributes.class,
 			selected: (this.selectedPosition.value === node[0].position),
 			tag: node[0].tag,
@@ -85,6 +88,7 @@ export default class {
 			onClick: withModifiers((event : Event) => event.stopPropagation(), ['capture']),
 			onInput: (value : string) => this.updateHandler(node[0].position, value),
 			onSelect: this.selectHandler.bind(null, node[0].position),
+			onRemove: this.removeHandler.bind(null, node[0].position),
 			selected: (this.selectedPosition.value === node[0].position),
 			tag: node[0].tag,
 		}, { default:() => h(node[0].tag, node[1], this.renderNodes(node[2])) });
