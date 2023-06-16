@@ -52,7 +52,6 @@ export default defineComponent({
 	setup(props, { emit }) {
 		const selectedPosition : Ref<number[]|null> = ref(null);
 		function selectComponent(position : any, event : Event) {
-			console.log(position);
 			selectedPosition.value = position;
 			event.stopPropagation();
 		};
